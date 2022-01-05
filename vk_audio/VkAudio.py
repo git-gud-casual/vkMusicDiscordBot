@@ -72,7 +72,7 @@ class Audio:
 
     @property
     def path(self):
-        return self._dir + '/' + 'audio.mp3'
+        return self.dir + '/' + 'audio.mp3'
 
     def __repr__(self):
         return f'{self.artist_name} - {self.name}'
