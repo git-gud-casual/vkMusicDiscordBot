@@ -62,13 +62,13 @@ class Music(commands.Cog):
                 print(e)
 
             embed.description = msg
-            await message.edit(embed=embed)
+            await message.edit(content='', embed=embed)
             return
 
         await ctx.invoke(self._join)
 
         embed = audio.get_discord_embed('Now Playing', ctx.author)
-        await message.edit(embed=embed)
+        await message.edit(content='', embed=embed)
 
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
         voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'))
