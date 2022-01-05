@@ -27,8 +27,8 @@ async def join(ctx):
 
 
 @client.command()
-async def play(ctx, song_name):
-    audio = vk_audio.get_m3u8(song_name)
+async def play(ctx, *song_name):
+    audio = vk_audio.get_m3u8(' '.join(song_name))
     voice = get(client.voice_clients, guild=ctx.guild)
     voice.play(FFmpegPCMAudio('tmp/new.mp3'))
     await ctx.send(f'Playing {audio}')

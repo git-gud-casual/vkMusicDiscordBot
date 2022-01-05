@@ -1,9 +1,9 @@
 from vk_api import VkApi
-from vk_audio_C_FUNC import decode
 from json import loads
 from re import match
 import requests
 import subprocess
+from vaud import decode
 
 
 class Audio:
@@ -70,7 +70,8 @@ class VkAudio:
         assert resp.status_code == 200
 
         resp_json = loads(resp.text.strip('<!--'))
-        url = decode(resp_json['payload'][1][0][0][2], self.user_id, need_mp3=False).rstrip('/index.m3u8')
+        url = decode(self.user_id, resp_json['payload'][1][0][0][2])
+        print(url)
 
         resp = requests.get(url + '/key.pub')
         assert resp.status_code == 200

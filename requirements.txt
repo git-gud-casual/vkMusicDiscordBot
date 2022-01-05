@@ -19,6 +19,6 @@ requests==2.27.0
 six==1.16.0
 typing_extensions==4.0.1
 urllib3==1.26.7
+vaud==0.4.3
 vk-api==11.9.7
-vk-audio==6.9
 yarl==1.7.2
