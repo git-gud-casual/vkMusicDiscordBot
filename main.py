@@ -50,8 +50,8 @@ class Music(commands.Cog):
             elif isinstance(e, AssertionError):
                 await ctx.send('Bad request')
             else:
-                print(e)
                 await ctx.send('Unknown error')
+                raise e
             return
 
         voice = get(client.voice_clients, guild=ctx.guild)
