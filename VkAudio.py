@@ -4,6 +4,7 @@ from re import match
 import requests
 import subprocess
 from vaud import decode
+from os import getcwd
 
 
 class Audio:
@@ -95,7 +96,8 @@ class VkAudio:
         with open('/tmp/index.m3u8', 'w') as f:
             f.write('\n'.join(m3u8))
 
-        subprocess.call('ffmpeg -y -allowed_extensions ALL -i /tmp/index.m3u8 -c copy /tmp/new.mp3')
+        current_path = getcwd()
+        subprocess.call(f'ffmpeg -y -allowed_extensions ALL -i {current_path}/tmp/index.m3u8 -c copy {current_path}/tmp/new.mp3')
         print('Song saved in new.mp3')
 
         return audio
