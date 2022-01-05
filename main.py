@@ -34,11 +34,10 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx: commands.Context, *song_name):
-        await ctx.invoke(self._join)
 
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
 
-        if voice.is_playing():
+        if voice and voice.is_playing():
             await ctx.send('Bot is playing now')
             return
 
@@ -58,6 +57,8 @@ class Music(commands.Cog):
                 raise e
             return
 
+        await ctx.invoke(self._join)
+        voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
         voice.play(FFmpegPCMAudio(f'tmp/new.mp3', executable='/usr/bin/ffmpeg'))
 
         await ctx.send(f'Playing {audio}')
