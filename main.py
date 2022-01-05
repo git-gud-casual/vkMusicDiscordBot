@@ -6,12 +6,16 @@ from discord import FFmpegPCMAudio
 from VkAudio import VkAudio
 from vk_api import VkApi
 
+from requests import session
+
 import config
 
 TOKEN = config.token
 client = commands.Bot(command_prefix='apb!')
 
-vk = VkApi(config.vk_login, config.vk_password)
+session = session()
+session.proxies = {'http': '85.26.146.169:80'}
+vk = VkApi(config.vk_login, config.vk_password, session=session)
 vk.auth()
 vk_audio = VkAudio(vk)
 
