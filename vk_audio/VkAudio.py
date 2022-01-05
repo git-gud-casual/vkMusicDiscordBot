@@ -4,6 +4,7 @@ from re import match
 import requests
 import subprocess
 from vaud import decode
+from exc import *
 
 
 class Audio:
@@ -35,6 +36,8 @@ class Audio:
                 break
 
         self.img_url = audio_dict[self._IMG_URL].split(',')[-1]
+        if not self.img_url.startswith('https://'):
+            self.img_url = None
 
     def __repr__(self):
         return f'{self.artist_name} - {self.name}'
@@ -55,14 +58,19 @@ class VkAudio:
         resp = self.vk_sess.http.post('https://vk.com/al_audio.php?act=section', data=data)
         assert resp.status_code == 200
         resp_json = loads(resp.text.strip('<!--'))
-        song_data = resp_json['payload'][1][1]['playlist']['list'][0]
+
+        try:
+            song_data = resp_json['payload'][1][1]['playlist']['list'][0]
+        except IndexError:
+            raise AudioNotFoundException()
+
         print(song_data)
 
         audio = Audio(song_data)
         print(audio)
         return audio
 
-    def get_m3u8(self, song_name):
+    def download_song_by_name(self, song_name):
         audio = self.get_song_id_by_name(song_name)
 
         data = {"al": 1, "ids": audio.hash}
@@ -75,7 +83,7 @@ class VkAudio:
 
         resp = requests.get(url + '/key.pub')
         assert resp.status_code == 200
-        with open('tmp/key.pub', 'w') as f:
+        with open('../tmp/key.pub', 'w') as f:
             f.write(resp.text)
 
         resp = requests.get(url + '/index.m3u8')
@@ -92,7 +100,7 @@ class VkAudio:
             elif 'URI' in string:
                 m3u8[index] = m3u8[index].split('"')[0] + 'key.pub'
 
-        with open('tmp/index.m3u8', 'w') as f:
+        with open('../tmp/index.m3u8', 'w') as f:
             f.write('\n'.join(m3u8))
 
         subprocess.call(f'/usr/bin/ffmpeg -y -allowed_extensions ALL -i tmp/index.m3u8 -c copy tmp/new.mp3', shell=True)
@@ -105,4 +113,3 @@ class VkAudio:
         if self._id is None:
             self._id = self.vk_sess.method("users.get")[0]["id"]
         return self._id
-
