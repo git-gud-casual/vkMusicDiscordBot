@@ -15,8 +15,6 @@ TOKEN = config.token
 client = commands.Bot(command_prefix='phonk!')
 
 vk = VkApi(config.vk_login, config.vk_password)
-vk.http.proxies = {'http': '85.26.146.169:80',
-                   'https': '176.120.193.111:55443'}
 vk.auth()
 vk_audio = VkAudio(vk)
 
