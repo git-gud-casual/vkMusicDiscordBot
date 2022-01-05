@@ -71,7 +71,7 @@ class Music(commands.Cog):
         voice.play(FFmpegPCMAudio(f'tmp/new.mp3', executable='/usr/bin/ffmpeg'))
 
     @commands.command()
-    async def stop(self, ctx: commands.Context):
+    async def leave(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
             await voice.disconnect()
