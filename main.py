@@ -41,7 +41,8 @@ class Music(commands.Cog):
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
 
         if voice and voice.is_playing():
-            await message.edit(content='Bot is playing now')
+            await message.delete()
+            await ctx.send('Bot is playing now')
             return
 
         song_name = ' '.join(song_name)
@@ -62,13 +63,15 @@ class Music(commands.Cog):
                 print(e)
 
             embed.description = msg
-            await message.edit(content='', embed=embed)
+            await message.delete()
+            await ctx.send(embed=embed)
             return
 
         await ctx.invoke(self._join)
 
         embed = audio.get_discord_embed('Now Playing', ctx.author)
-        await message.edit(content='', embed=embed)
+        await message.delete()
+        await ctx.send(embed=embed)
 
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
         voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'))
