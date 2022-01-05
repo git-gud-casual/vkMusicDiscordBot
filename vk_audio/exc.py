@@ -4,3 +4,7 @@ class VkAudioException(Exception):
 
 class AudioNotFoundException(VkAudioException):
     pass
+
+
+class AudioNotAvailable(VkAudioException):
+    pass

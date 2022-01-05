@@ -24,6 +24,7 @@ class Audio:
         self.artist_name = audio_dict[self._ARTIST_NAME]
         self.id = f'{audio_dict[self._SONG_ID]}_{audio_dict[self._OWNER_ID]}'
 
+        self.hash = None
         for el in audio_dict:
             if isinstance(el, str) and match(r'\w+//\w+///\w+/', el):
 
@@ -34,6 +35,8 @@ class Audio:
 
                 self.hash = f'{self.id}_{el[1]}_{el[2]}'
                 break
+        if self.hash is None:
+            raise AudioNotAvailable()
 
         self.img_url = audio_dict[self._IMG_URL].split(',')[-1]
         if not self.img_url.startswith('https://'):

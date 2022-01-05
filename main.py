@@ -38,6 +38,12 @@ class Music(commands.Cog):
     async def play(self, ctx: commands.Context, *song_name):
         await ctx.invoke(self._join)
 
+        voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
+
+        if voice.is_playing():
+            await ctx.send('Bot is playing now')
+            return
+
         song_name = ' '.join(song_name)
 
         try:
@@ -47,16 +53,23 @@ class Music(commands.Cog):
                 await ctx.send('Song not found')
             elif isinstance(e, AssertionError):
                 await ctx.send('Bad request')
+            elif isinstance(e, AudioNotAvailable):
+                await ctx.send('Audio not available')
             else:
                 await ctx.send('Unknown error')
                 raise e
             return
 
-        voice = get(client.voice_clients, guild=ctx.guild)
         voice.play(FFmpegPCMAudio(f'tmp/new.mp3', executable='/usr/bin/ffmpeg'))
 
         await ctx.send(f'Playing {audio}')
-        await ctx.send(audio.img_url)
+        if audio.img_url:
+            await ctx.send(audio.img_url)
+
+    @commands.command()
+    async def stop(self, ctx: commands.Context):
+        voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
+        voice.stop()
 
 
 client.add_cog(Music(client))
