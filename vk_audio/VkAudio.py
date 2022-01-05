@@ -4,7 +4,7 @@ from re import match
 import requests
 import subprocess
 from vaud import decode
-from exc import *
+from vk_audio.exc import *
 
 
 class Audio:

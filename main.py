@@ -13,7 +13,7 @@ import config
 from vk_audio.exc import *
 
 TOKEN = config.token
-client = commands.Bot(command_prefix='apb!')
+client = commands.Bot(command_prefix='phonk!')
 
 session = session()
 session.proxies = {'http': '85.26.146.169:80',
