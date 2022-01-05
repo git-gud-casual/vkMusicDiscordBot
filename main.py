@@ -30,7 +30,8 @@ class Music(commands.Cog):
         voice = get(client.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
             await voice.move_to(channel)
-        await channel.connect()
+        else:
+            await channel.connect()
 
     @commands.command()
     async def play(self, ctx: commands.Context, *song_name):
@@ -68,7 +69,8 @@ class Music(commands.Cog):
     @commands.command()
     async def stop(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
-        voice.stop()
+        if voice and voice.is_connected():
+            await voice.disconnect()
 
 
 client.add_cog(Music(client))
