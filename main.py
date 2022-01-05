@@ -57,6 +57,7 @@ class Music(commands.Cog):
                 msg = 'Audio not available'
             else:
                 msg = 'Unknown error'
+                print(e)
 
             embed.description = msg
             await ctx.send(embed=embed)

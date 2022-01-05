@@ -109,6 +109,7 @@ class VkAudio:
         audio = self.get_song_id_by_name(song_name)
 
         if exists(audio.path):
+            print(f'{audio.path} exists')
             return audio
 
         data = {"al": 1, "ids": audio.hash}
