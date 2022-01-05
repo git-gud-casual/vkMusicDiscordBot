@@ -62,9 +62,11 @@ class Music(commands.Cog):
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
         voice.play(FFmpegPCMAudio(f'tmp/new.mp3', executable='/usr/bin/ffmpeg'))
 
-        await ctx.send(f'Playing {audio}')
-        if audio.img_url:
-            await ctx.send(audio.img_url)
+        embed = audio.get_discord_embed('Now Playing', ctx.author)
+
+        await ctx.send(embed=embed)
+        """if audio.img_url:
+            await ctx.send(audio.img_url)"""
 
     @commands.command()
     async def stop(self, ctx: commands.Context):

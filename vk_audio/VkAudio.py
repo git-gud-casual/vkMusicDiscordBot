@@ -5,6 +5,7 @@ import requests
 import subprocess
 from vaud import decode
 from vk_audio.exc import *
+from discord import Embed, Color
 
 
 class Audio:
@@ -41,6 +42,12 @@ class Audio:
         self.img_url = audio_dict[self._IMG_URL].split(',')[-1]
         if not self.img_url.startswith('https://'):
             self.img_url = None
+
+    def get_discord_embed(self, title, requester):
+        return (Embed(title=title,
+                      description=f'{self.artist_name} - {self.name}',
+                      color=Color.dark_purple()))\
+            .add_field(name='Requested by', value=requester.mention)
 
     def __repr__(self):
         return f'{self.artist_name} - {self.name}'
