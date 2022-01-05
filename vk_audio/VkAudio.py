@@ -21,7 +21,6 @@ class Audio:
 
     def __init__(self, audio_dict):
         self._json_parse(audio_dict)
-        self._dir = None
 
     def _json_parse(self, audio_dict):
         self.name = audio_dict[self._SONG_NAME]
@@ -63,16 +62,12 @@ class Audio:
 
     @property
     def dir(self):
-        if self._dir is None:
-            tmp_file = 'tmp'
-            self._dir = tmp_file + '/' + self.id  # os.path.join
-            mkdir(self._dir)
-
-        return self._dir
+        tmp_file = 'tmp'
+        return f'{tmp_file}/{self.id}'
 
     @property
     def path(self):
-        return self.dir + '/' + 'audio.mp3'
+        return f'{self.dir}/audio.mp3'
 
     def __repr__(self):
         return f'{self.artist_name} - {self.name}'
@@ -119,6 +114,8 @@ class VkAudio:
         resp_json = loads(resp.text.strip('<!--'))
         url = decode(self.user_id, resp_json['payload'][1][0][0][2]).rstrip('/index.m3u8')
         print(url)
+
+        mkdir(audio.dir)
 
         resp = requests.get(url + '/key.pub')
         assert resp.status_code == 200
