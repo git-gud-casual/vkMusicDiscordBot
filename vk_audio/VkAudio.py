@@ -44,10 +44,15 @@ class Audio:
             self.img_url = None
 
     def get_discord_embed(self, title, requester):
-        return (Embed(title=title,
-                      description=f'{self.artist_name} - {self.name}',
-                      color=Color.dark_purple()))\
+        embed = (Embed(title=title,
+                       description=self.artist_name,
+                       color=Color.red())) \
+            .add_field(name="Song", value=f'[{self.name}](https://vk.com/audio{self.id})') \
             .add_field(name='Requested by', value=requester.mention)
+
+        if self.img_url:
+            embed.set_image(self.img_url)
+        return embed
 
     def __repr__(self):
         return f'{self.artist_name} - {self.name}'

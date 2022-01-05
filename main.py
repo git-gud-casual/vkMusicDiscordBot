@@ -59,12 +59,13 @@ class Music(commands.Cog):
             return
 
         await ctx.invoke(self._join)
+
+        embed = audio.get_discord_embed('Now Playing', ctx.author)
+        await ctx.send(embed=embed)
+
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
         voice.play(FFmpegPCMAudio(f'tmp/new.mp3', executable='/usr/bin/ffmpeg'))
 
-        embed = audio.get_discord_embed('Now Playing', ctx.author)
-
-        await ctx.send(embed=embed)
         """if audio.img_url:
             await ctx.send(audio.img_url)"""
 
