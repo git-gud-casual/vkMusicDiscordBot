@@ -47,11 +47,14 @@ class Audio:
         embed = (Embed(title=title,
                        description=self.artist_name,
                        color=Color.red())) \
-            .add_field(name="Song", value=f'[{self.name}](https://vk.com/audio{self.id})') \
             .add_field(name='Requested by', value=requester.mention)
 
         if self.img_url:
-            embed.set_image(self.img_url)
+            embed.set_image(self.img_url).add_field(name="Track:",
+                                                    value=f'[{self.name}](https://vk.com/audio{self.id})')
+        else:
+            embed.add_field(name="Track:", value=self.name)
+
         return embed
 
     def __repr__(self):
