@@ -7,6 +7,7 @@ from vaud import decode
 from vk_audio.exc import *
 from discord import Embed, Color
 from os import mkdir, rmdir
+from os.path import exists
 
 
 class Audio:
@@ -106,6 +107,9 @@ class VkAudio:
 
     def download_song_by_name(self, song_name):
         audio = self.get_song_id_by_name(song_name)
+
+        if exists(audio.path):
+            return audio
 
         data = {"al": 1, "ids": audio.hash}
         resp = self.vk_sess.http.post('https://vk.com/al_audio.php?act=reload_audio', data=data)
