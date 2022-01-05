@@ -70,7 +70,7 @@ class VkAudio:
         assert resp.status_code == 200
 
         resp_json = loads(resp.text.strip('<!--'))
-        url = decode(self.user_id, resp_json['payload'][1][0][0][2])
+        url = decode(self.user_id, resp_json['payload'][1][0][0][2]).rstrip('/index.m3u8')
         print(url)
 
         resp = requests.get(url + '/key.pub')

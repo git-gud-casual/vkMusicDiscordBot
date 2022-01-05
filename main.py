@@ -15,7 +15,7 @@ client = commands.Bot(command_prefix='apb!')
 
 session = session()
 session.proxies = {'http': '85.26.146.169:80'}
-vk = VkApi(config.vk_login, config.vk_password, session=session)
+vk = VkApi(config.vk_login, config.vk_password)
 vk.auth()
 vk_audio = VkAudio(vk)
 
