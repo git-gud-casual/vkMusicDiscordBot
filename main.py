@@ -61,5 +61,5 @@ class Music(commands.Cog):
         await ctx.send(audio.img_url)
 
 
-client.add_cog(Music)
+client.add_cog(Music(client))
 client.run(TOKEN)
