@@ -71,7 +71,7 @@ class VkAudio:
 
         try:
             song_data = resp_json['payload'][1][1]['playlist']['list'][0]
-        except IndexError:
+        except TypeError:
             raise AudioNotFoundException()
 
         print(song_data)
