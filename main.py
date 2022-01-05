@@ -68,7 +68,7 @@ class Music(commands.Cog):
         await ctx.send(embed=embed)
 
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
-        voice.play(FFmpegPCMAudio(f'tmp/new.mp3', executable='/usr/bin/ffmpeg'))
+        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'))
 
     @commands.command()
     async def leave(self, ctx: commands.Context):

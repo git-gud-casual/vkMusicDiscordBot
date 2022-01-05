@@ -6,6 +6,7 @@ import subprocess
 from vaud import decode
 from vk_audio.exc import *
 from discord import Embed, Color
+from os import mkdir, rmdir
 
 
 class Audio:
@@ -19,6 +20,7 @@ class Audio:
 
     def __init__(self, audio_dict):
         self._json_parse(audio_dict)
+        self._dir = None
 
     def _json_parse(self, audio_dict):
         self.name = audio_dict[self._SONG_NAME]
@@ -57,6 +59,19 @@ class Audio:
         embed.add_field(name='Requested by', value=requester.mention)
 
         return embed
+
+    @property
+    def dir(self):
+        if self._dir is None:
+            tmp_file = 'tmp'
+            self._dir = tmp_file + '/' + self.id  # os.path.join
+            mkdir(self._dir)
+
+        return self._dir
+
+    @property
+    def path(self):
+        return self._dir + '/' + 'audio.mp3'
 
     def __repr__(self):
         return f'{self.artist_name} - {self.name}'
@@ -102,7 +117,7 @@ class VkAudio:
 
         resp = requests.get(url + '/key.pub')
         assert resp.status_code == 200
-        with open('tmp/key.pub', 'w') as f:
+        with open(f'{audio.dir}/key.pub', 'w') as f:
             f.write(resp.text)
 
         resp = requests.get(url + '/index.m3u8')
@@ -114,16 +129,16 @@ class VkAudio:
                 resp = requests.get(f'{url}/{string}')
                 assert resp.status_code == 200
 
-                with open(f'tmp/{string}', 'wb') as f:
+                with open(f'{audio.dir}/{string}', 'wb') as f:
                     f.write(resp.content)
             elif 'URI' in string:
                 m3u8[index] = m3u8[index].split('"')[0] + 'key.pub'
 
-        with open('tmp/index.m3u8', 'w') as f:
+        with open(f'{audio.dir}/index.m3u8', 'w') as f:
             f.write('\n'.join(m3u8))
 
-        subprocess.call(f'/usr/bin/ffmpeg -y -allowed_extensions ALL -i tmp/index.m3u8 -c copy tmp/new.mp3', shell=True)
-        print('Song saved in new.mp3')
+        subprocess.call(f'/usr/bin/ffmpeg -y -allowed_extensions ALL -i {audio.dir}/index.m3u8 -c copy {audio.path}', shell=True)
+        print(f'Song saved in {audio.path}')
 
         return audio
 
