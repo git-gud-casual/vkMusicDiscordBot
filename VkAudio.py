@@ -87,15 +87,15 @@ class VkAudio:
                 resp = requests.get(f'{url}/{string}')
                 assert resp.status_code == 200
 
-                with open(f'tmp/{string}', 'wb') as f:
+                with open(f'/tmp/{string}', 'wb') as f:
                     f.write(resp.content)
             elif 'URI' in string:
                 m3u8[index] = m3u8[index].split('"')[0] + 'key.pub'
 
-        with open('tmp/index.m3u8', 'w') as f:
+        with open('/tmp/index.m3u8', 'w') as f:
             f.write('\n'.join(m3u8))
 
-        subprocess.call('ffmpeg -y -allowed_extensions ALL -i tmp/index.m3u8 -c copy tmp/new.mp3')
+        subprocess.call('ffmpeg -y -allowed_extensions ALL -i /tmp/index.m3u8 -c copy /tmp/new.mp3')
         print('Song saved in new.mp3')
 
         return audio
