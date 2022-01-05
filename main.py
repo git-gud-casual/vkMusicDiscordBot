@@ -47,15 +47,19 @@ class Music(commands.Cog):
         try:
             audio = vk_audio.download_song_by_name(song_name)
         except Exception as e:
+            embed = discord.Embed(title='Error', color=discord.Color.red())
+
             if isinstance(e, AudioNotFoundException):
-                await ctx.send('Song not found')
+                msg = 'Song not found'
             elif isinstance(e, AssertionError):
-                await ctx.send('Bad request')
+                msg = 'Bad request'
             elif isinstance(e, AudioNotAvailable):
-                await ctx.send('Audio not available')
+                msg = 'Audio not available'
             else:
-                await ctx.send('Unknown error')
-                raise e
+                msg = 'Unknown error'
+
+            embed.description = msg
+            await ctx.send(embed=embed)
             return
 
         await ctx.invoke(self._join)
@@ -65,9 +69,6 @@ class Music(commands.Cog):
 
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
         voice.play(FFmpegPCMAudio(f'tmp/new.mp3', executable='/usr/bin/ffmpeg'))
-
-        """if audio.img_url:
-            await ctx.send(audio.img_url)"""
 
     @commands.command()
     async def stop(self, ctx: commands.Context):
