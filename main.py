@@ -4,12 +4,12 @@ from discord.utils import get
 from discord import FFmpegPCMAudio
 
 from vk_audio.VkAudio import VkAudio
-from vk_api import VkApi
+from vk_audio.exc import *
 
+from vk_api import VkApi
 
 import config
 
-from vk_audio.exc import *
 
 TOKEN = config.token
 client = commands.Bot(command_prefix='phonk!')
@@ -74,7 +74,7 @@ class Music(commands.Cog):
         await ctx.send(embed=embed)
 
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'))
+        voice.play(FFmpegPCMAudio(audio.dir + '/index.m3u8', executable='/usr/bin/ffmpeg'))
 
     @commands.command()
     async def leave(self, ctx: commands.Context):
