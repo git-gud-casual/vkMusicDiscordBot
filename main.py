@@ -9,6 +9,7 @@ from vk_audio.exc import *
 from vk_api import VkApi
 
 import config
+from waifu_pics_api.WaifuApi import WaifuApi
 
 
 TOKEN = config.token
@@ -81,6 +82,30 @@ class Music(commands.Cog):
         voice: discord.VoiceClient = get(client.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
             await voice.disconnect()
+
+
+class Anime(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+        self.waifu_api = WaifuApi()
+
+    @commands.command()
+    async def anime(self, ctx: commands.Context):
+        image_url = self.waifu_api.get_random_image()
+        if image_url:
+            await ctx.send(image_url)
+        else:
+            await ctx.send('Error')
+
+    @commands.command()
+    async def anime_ddos(self, ctx: commands.Context):
+        image_urls = self.waifu_api.get_random_many_images()
+        if image_urls:
+            for url in image_urls:
+                await ctx.send(url)
+        else:
+            await ctx.send('Error')
+
 
 
 client.add_cog(Music(client))
