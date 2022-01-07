@@ -107,6 +107,6 @@ class Anime(commands.Cog):
             await ctx.send('Error')
 
 
-
 client.add_cog(Music(client))
+client.add_cog(Anime(client))
 client.run(TOKEN)
