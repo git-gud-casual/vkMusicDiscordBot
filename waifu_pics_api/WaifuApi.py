@@ -27,6 +27,9 @@ class WaifuApi:
         return None
 
     def get_many_images(self, category, exclude_list=None):
+        data = {}
+        if exclude_list:
+            data['exclude'] = exclude_list
         response = requests.post(f'{self.url}/many/sfw/{category}', data={'exclude': exclude_list})
         if response.ok:
             image_urls = response.json().get('files')
