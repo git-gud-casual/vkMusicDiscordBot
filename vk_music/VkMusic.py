@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 from discord import FFmpegPCMAudio
-from vk_audio.exc import *
-from vk_audio.VkAudio import VkAudio
+from vk_music.vk_audio.exc import *
+from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 
