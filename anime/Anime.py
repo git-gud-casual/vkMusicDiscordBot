@@ -1,5 +1,5 @@
 from discord.ext import commands
-from waifu_pics_api.WaifuApi import WaifuApi
+from anime.waifu_pics_api.WaifuApi import WaifuApi
 
 
 class Anime(commands.Cog):

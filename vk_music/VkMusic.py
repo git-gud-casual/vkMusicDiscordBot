@@ -70,7 +70,6 @@ class VkMusic(commands.Cog):
         voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'))
         print('ok')
 
-
     @commands.command()
     async def leave(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)

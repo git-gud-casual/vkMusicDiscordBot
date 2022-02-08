@@ -4,7 +4,7 @@ from re import match
 import requests
 import subprocess
 from vaud import decode
-from vk_audio.exc import *
+from vk_music.vk_audio.exc import *
 from discord import Embed, Color
 from os import mkdir, rmdir
 from os.path import exists
