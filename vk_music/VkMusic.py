@@ -6,7 +6,7 @@ from vk_music.vk_audio.exc import *
 from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
-from Queues import Queues
+from vk_music.Queues import Queues
 
 
 class VkMusic(commands.Cog):
