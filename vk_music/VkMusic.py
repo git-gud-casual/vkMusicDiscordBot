@@ -32,16 +32,15 @@ class VkMusic(commands.Cog):
     @commands.command(name='play')
     async def play(self, ctx: commands.Context, *, song_name):
 
-        message = await ctx.send(':musical_note: Searching...')
-
         await ctx.invoke(self._join)
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
         if voice and voice.is_playing():
-            await message.delete()
             await ctx.send('Added in queue')
             self.queues.add(voice, lambda: get_event_loop().run_until_complete(ctx.invoke(self.play, song_name=song_name)))
             return
+
+        message = await ctx.send(':musical_note: Searching...')
 
         try:
             audio = self.vk_audio.download_song_by_name(song_name)
@@ -67,7 +66,7 @@ class VkMusic(commands.Cog):
         await message.delete()
         await ctx.send(embed=embed)
 
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: self.queues.get(voice))
+        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: self.queues.get(voice)())
 
     @commands.command()
     async def leave(self, ctx: commands.Context):
