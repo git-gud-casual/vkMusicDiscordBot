@@ -7,7 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
-from asyncio import create_task
+from asyncio.tasks import create_task
 
 
 class VkMusic(commands.Cog):
