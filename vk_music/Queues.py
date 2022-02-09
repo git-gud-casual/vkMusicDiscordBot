@@ -10,7 +10,9 @@ class Queues:
 
     def get(self, key):
         if self.queues.get('key'):
+            print('return pop')
             return self.queues[key].pop(0)
+        print('return pass')
         return self.pass_func
 
     @staticmethod
