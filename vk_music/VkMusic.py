@@ -7,7 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
-from asyncio import run
+from asyncio import get_event_loop
 
 
 class VkMusic(commands.Cog):
@@ -39,7 +39,7 @@ class VkMusic(commands.Cog):
         if voice and voice.is_playing():
             await message.delete()
             await ctx.send('Added in queue')
-            self.queues.add(voice, lambda: run(ctx.invoke(self.play, song_name=song_name)))
+            self.queues.add(voice, lambda: get_event_loop().run_until_complete(ctx.invoke(self.play, song_name=song_name)))
             return
 
         try:
