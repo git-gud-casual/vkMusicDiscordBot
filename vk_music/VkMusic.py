@@ -7,7 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
-from asyncio import get_event_loop
+from asyncio import create_task
 
 
 class VkMusic(commands.Cog):
@@ -37,8 +37,7 @@ class VkMusic(commands.Cog):
 
         if voice and voice.is_playing():
             await ctx.send('Added in queue')
-            get_event_loop().run_until_complete(ctx.invoke(self.play, song_name=song_name))
-            self.queues.add(voice, lambda: get_event_loop().run_until_complete(ctx.invoke(self.play, song_name=song_name)))
+            self.queues.add(voice, lambda: create_task(ctx.invoke(self.play, song_name=song_name)))
             return
 
         message = await ctx.send(':musical_note: Searching...')
