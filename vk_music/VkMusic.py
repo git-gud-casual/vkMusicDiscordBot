@@ -34,16 +34,14 @@ class VkMusic(commands.Cog):
 
         message = await ctx.send(':musical_note: Searching...')
 
+        await self._join(ctx)
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
-        if not voice:
-            await ctx.invoke(self._join)
-            voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
         print(song_name)
         if voice and voice.is_playing():
             await message.delete()
             await ctx.send('Added in queue')
-            self.queues.add(voice, lambda: get_event_loop().run_until_complete(ctx.invoke(self.play, song_name=song_name)))
+            self.queues.add(voice, lambda: get_event_loop().run_until_complete(self.play(ctx, song_name=song_name)))
             return
 
         try:
