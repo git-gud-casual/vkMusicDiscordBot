@@ -20,7 +20,7 @@ class VkMusic(commands.Cog):
         vk.auth()
         self.vk_audio = VkAudio(vk)
 
-    @commands.command(name='join', invoke_without_subcommand=True)
+    @commands.command(name='join')
     async def _join(self, ctx: commands.Context):
         channel: discord.VoiceChannel = ctx.message.author.voice.channel
         voice = get(self.bot.voice_clients, guild=ctx.guild)
@@ -29,19 +29,19 @@ class VkMusic(commands.Cog):
         else:
             await channel.connect()
 
-    @commands.command(name='play', invoke_without_subcommand=True)
+    @commands.command(name='play')
     async def play(self, ctx: commands.Context, *, song_name):
 
         message = await ctx.send(':musical_note: Searching...')
 
-        await self._join(ctx)
+        await ctx.invoke(self._join)
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
         print(song_name)
         if voice and voice.is_playing():
             await message.delete()
             await ctx.send('Added in queue')
-            self.queues.add(voice, lambda: get_event_loop().run_until_complete(self.play(ctx, song_name=song_name)))
+            self.queues.add(voice, lambda: get_event_loop().run_until_complete(ctx.invoke(self.play, song_name=song_name)))
             return
 
         try:
