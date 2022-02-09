@@ -9,7 +9,7 @@ class Queues:
             self.queues[key] = [func]
 
     def get(self, key):
-        if self.queues.get('key'):
+        if self.queues.get(key):
             print('return pop')
             return self.queues[key].pop(0)
         print('return pass')
