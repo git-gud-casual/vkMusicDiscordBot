@@ -7,6 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
+from asyncio import run
 
 
 class VkMusic(commands.Cog):
@@ -29,17 +30,16 @@ class VkMusic(commands.Cog):
             await channel.connect()
 
     @commands.command(name='play', invoke_without_subcommand=True)
-    async def play(self, ctx: commands.Context, *song_name):
+    async def play(self, ctx: commands.Context, *, song_name):
 
         message = await ctx.send(':musical_note: Searching...')
 
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
-        song_name = ' '.join(song_name)
 
         if voice and voice.is_playing():
             await message.delete()
             await ctx.send('Added in queue')
-            self.queues.add(voice.token, song_name)
+            self.queues.add(voice, lambda: run(ctx.invoke(self.play, song_name=song_name)))
             return
 
         try:
@@ -60,7 +60,7 @@ class VkMusic(commands.Cog):
             embed.description = msg
             await message.delete()
             await ctx.send(embed=embed)
-            return
+            return self.queues.get(voice)()
 
         await ctx.invoke(self._join)
 
@@ -68,15 +68,7 @@ class VkMusic(commands.Cog):
         await message.delete()
         await ctx.send(embed=embed)
 
-        voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'))
-
-        while voice.is_playing():
-            pass
-
-        next_song = self.queues.get(voice.token)
-        if next_song:
-            return await ctx.invoke(self.play, next_song)
+        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda: self.queues.get(voice))
 
     @commands.command()
     async def leave(self, ctx: commands.Context):
