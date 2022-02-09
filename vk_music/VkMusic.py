@@ -68,7 +68,7 @@ class VkMusic(commands.Cog):
         await message.delete()
         await ctx.send(embed=embed)
 
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda: self.queues.get(voice))
+        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: self.queues.get(voice))
 
     @commands.command()
     async def leave(self, ctx: commands.Context):
