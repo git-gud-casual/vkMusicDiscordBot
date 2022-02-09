@@ -37,6 +37,7 @@ class VkMusic(commands.Cog):
 
         if voice and voice.is_playing():
             await ctx.send('Added in queue')
+            get_event_loop().run_until_complete(ctx.invoke(self.play, song_name=song_name))
             self.queues.add(voice, lambda: get_event_loop().run_until_complete(ctx.invoke(self.play, song_name=song_name)))
             return
 
