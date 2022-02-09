@@ -37,6 +37,7 @@ class VkMusic(commands.Cog):
         await ctx.invoke(self._join)
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
+        print(song_name)
         if voice and voice.is_playing():
             await message.delete()
             await ctx.send('Added in queue')
