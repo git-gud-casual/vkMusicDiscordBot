@@ -34,6 +34,7 @@ class VkMusic(commands.Cog):
 
         message = await ctx.send(':musical_note: Searching...')
 
+        await ctx.invoke(self._join)
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
         if voice and voice.is_playing():
@@ -61,8 +62,6 @@ class VkMusic(commands.Cog):
             await message.delete()
             await ctx.send(embed=embed)
             return self.queues.get(voice)()
-
-        await ctx.invoke(self._join)
 
         embed = audio.get_discord_embed('Now Playing', ctx.author)
         await message.delete()
