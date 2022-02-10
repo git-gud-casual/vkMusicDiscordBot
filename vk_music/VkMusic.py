@@ -57,6 +57,8 @@ class VkMusic(commands.Cog):
             if audio:
                 voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
                            after=self.get_after_func(ctx, voice, song_name))
+            else:
+                self.queues.set_playing(voice, False)
 
     def get_after_func(self, ctx, voice, audio_path):
         def after(x):
