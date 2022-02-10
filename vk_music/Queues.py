@@ -1,4 +1,5 @@
 from queue import Queue
+from time import sleep
 
 
 class Queues:
@@ -25,6 +26,7 @@ class Queues:
             del self.sizes[key]
 
     def get(self, key):
+        sleep(1.5)
         self.add_size(key, -1)
         if self.queues.get(key):
             return self.queues[key].get()
