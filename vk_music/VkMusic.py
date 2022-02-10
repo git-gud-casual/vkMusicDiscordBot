@@ -7,6 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
+from os.path import exists
 
 
 class VkMusic(commands.Cog):
@@ -41,25 +42,30 @@ class VkMusic(commands.Cog):
     async def play(self, ctx: commands.Context, *, song_name):
         await ctx.invoke(self._join)
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
+
         if voice:
             if self.queues.is_playing(voice):
                 queue = self.queues.add_size(voice)
                 audio = await self.prepare_audio(ctx, song_name, False, queue)
                 if audio:
-                    self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                                                              after=self.get_after_func(voice, audio.path)))
+                    self.queues.add(voice, lambda: self.bot.loop.create_task(ctx.invoke(self.play, song_name=audio.path)))
                 return
 
             self.queues.set_playing(voice, True)
 
-            audio = await self.prepare_audio(ctx, song_name)
-            voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                       after=self.get_after_func(voice, audio.path))
+            if not exists(song_name):
+                audio = await self.prepare_audio(ctx, song_name)
+                path = audio.path
+            else:
+                path = song_name
 
-    def get_after_func(self, voice, audio_path):
+            voice.play(FFmpegPCMAudio(path, executable='/usr/bin/ffmpeg'),
+                       after=self.get_after_func(ctx, voice, path))
+
+    def get_after_func(self, ctx, voice, audio_path):
         # audio_path for loop
         return lambda x: self.queues.get(voice)() if not self.queues.is_looped(voice) else \
-            voice.play(FFmpegPCMAudio(audio_path, executable='/usr/bin/ffmpeg'))
+            self.bot.loop.create_task(ctx.invoke(self.play, song_name=audio_path))
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
         message = await ctx.send(':musical_note: Searching...')
