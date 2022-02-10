@@ -37,25 +37,23 @@ class VkMusic(commands.Cog):
 
     @commands.command(name='play')
     async def play(self, ctx: commands.Context, *, song_name):
+        await ctx.invoke(self._join)
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
-        if not voice:
-            await ctx.invoke(self._join)
-            voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
+        if voice:
+            if self.queues.is_playing(voice):
+                queue = self.queues.add_size(voice)
+                audio = await self.prepare_audio(ctx, song_name, False, queue)
+                if audio:
+                    loop = get_event_loop()
+                    self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
+                                                              after=self.get_after_func(voice, loop)))
+                return
 
-        if self.queues.is_playing(voice):
-            queue = self.queues.add_size(voice)
-            audio = await self.prepare_audio(ctx, song_name, False, queue)
-            if audio:
-                loop = get_event_loop()
-                self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                                                          after=self.get_after_func(voice, loop)))
-            return
+            self.queues.set_playing(voice, True)
 
-        self.queues.set_playing(voice, True)
-
-        audio = await self.prepare_audio(ctx, song_name)
-        loop = get_event_loop()
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=self.get_after_func(voice, loop))
+            audio = await self.prepare_audio(ctx, song_name)
+            loop = get_event_loop()
+            voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=self.get_after_func(voice, loop))
 
     def get_after_func(self, voice, loop):
         return lambda x: loop.run_until_complete(voice.disconnect()) if self.queues.get(voice)() == 0 else 0
