@@ -25,7 +25,8 @@ class VkMusic(commands.Cog):
         if ctx.message.author.voice:
             channel: discord.VoiceChannel = ctx.message.author.voice.channel
             voice = get(self.bot.voice_clients, guild=ctx.guild)
-            if voice and voice.is_connected() and voice.channel.id != channel.id:
+
+            if voice and voice.is_connected() and voice.channel != channel:
                 self.queues.remove(voice)
                 await voice.disconnect()
             await channel.connect()
