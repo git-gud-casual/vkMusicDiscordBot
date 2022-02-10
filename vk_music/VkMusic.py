@@ -26,8 +26,8 @@ class VkMusic(commands.Cog):
             channel: discord.VoiceChannel = ctx.message.author.voice.channel
             voice = get(self.bot.voice_clients, guild=ctx.guild)
             if voice and voice.is_connected() and voice.channel != channel.id:
-                voice.stop()
-                await channel.connect()
+                voice.disconnect()
+            await channel.connect()
         else:
             embed = discord.Embed(title='Error', color=discord.Color.red())
             embed.description = 'You are not in voice channel'
