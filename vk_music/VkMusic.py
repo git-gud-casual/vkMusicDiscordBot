@@ -31,10 +31,15 @@ class VkMusic(commands.Cog):
 
     @commands.command(name='play')
     async def play(self, ctx: commands.Context, *, song_name):
-        await ctx.invoke(self._join)
+        voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
+        if not voice:
+            await ctx.invoke(self._join)
+            voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
         if self.queues.is_playing(voice):
+            self.queues.increment_size(voice)
+
             audio = await self.prepare_audio(ctx, voice, song_name, False)
             if audio:
                 # loop = get_event_loop()
@@ -77,7 +82,7 @@ class VkMusic(commands.Cog):
         if play_now:
             embed = audio.get_discord_embed('Now Playing', ctx.author)
         else:
-            embed = audio.get_discord_embed(f'Add in Queue#{self.queues.size(voice) + 1}', ctx.author)
+            embed = audio.get_discord_embed(f'Add in Queue#{self.queues.get_size(voice) + 1}', ctx.author)
         await message.delete()
         await ctx.send(embed=embed)
         return audio

@@ -5,6 +5,7 @@ class Queues:
     def __init__(self):
         self.queues = {}
         self.playing = {}
+        self.sizes = {}
 
     def add(self, key, func):
         if self.queues.get(key):
@@ -19,10 +20,11 @@ class Queues:
             return lambda: self.queues[key].get()
         return lambda: 0
 
-    def size(self, key):
-        if self.queues.get(key) is None:
-            return 0
-        return self.queues[key].qsize()
+    def get_size(self, key):
+        return self.sizes[key]
+
+    def increment_size(self, key):
+        self.sizes[key] = self.sizes.get(key, 0) + 1
 
     def is_playing(self, key):
         return self.playing.get(key, False)
