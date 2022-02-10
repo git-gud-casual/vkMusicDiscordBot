@@ -13,7 +13,6 @@ class Queues:
         else:
             self.queues[key] = Queue()
             self.queues[key].put(func)
-            self.looped[key] = False
 
     def is_looped(self, key):
         return self.looped.get(key, False)
