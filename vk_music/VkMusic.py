@@ -83,7 +83,7 @@ class VkMusic(commands.Cog):
                 msg = 'Audio not available'
             else:
                 msg = 'Unknown error'
-                print(e)
+                print(e.__traceback__)
 
             embed.description = msg
             await message.delete()
