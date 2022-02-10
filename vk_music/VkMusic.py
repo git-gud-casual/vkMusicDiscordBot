@@ -82,8 +82,6 @@ class VkMusic(commands.Cog):
         await ctx.send(embed=embed)
         return audio
 
-    self.play
-
     @commands.command()
     async def leave(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
