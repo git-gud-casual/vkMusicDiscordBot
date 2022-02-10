@@ -20,6 +20,8 @@ class Queues:
         return lambda: 0
 
     def size(self, key):
+        if self.queues.get(key) is None:
+            return 0
         return self.queues[key].qsize()
 
     def is_playing(self, key):
