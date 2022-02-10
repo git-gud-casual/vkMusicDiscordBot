@@ -1,5 +1,5 @@
 from queue import Queue
-from asyncio import sleep
+from time import sleep
 
 
 class Queues:
@@ -17,11 +17,10 @@ class Queues:
 
     def get(self, key):
         sleep(3)
-        self.set_playing(key, False)
         self.add_size(key, -1)
         if self.queues.get(key):
-            print('return')
             return self.queues[key].get()
+        self.set_playing(key, False)
         return lambda: 0
 
     def add_size(self, key, size=1):
