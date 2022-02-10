@@ -94,6 +94,7 @@ class VkAudio:
         except TypeError:
             raise AudioNotFoundException()
 
+        print(song_data)
         audio = Audio(song_data)
         return audio
 
