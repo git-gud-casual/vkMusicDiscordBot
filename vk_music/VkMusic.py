@@ -28,10 +28,8 @@ class VkMusic(commands.Cog):
 
             if voice and voice.is_connected():
                 print(voice.channel.id, channel.id)
-                self.queues.remove(voice)
-                await voice.disconnect()
-
-            if voice and not voice.is_connected():
+                await voice.move_to(channel)
+            else:
                 await channel.connect()
         else:
             embed = discord.Embed(title='Error', color=discord.Color.red())
