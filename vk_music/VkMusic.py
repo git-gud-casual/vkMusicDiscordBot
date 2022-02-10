@@ -7,7 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
-from asyncio import get_running_loop
+from asyncio import get_event_loop
 
 
 class VkMusic(commands.Cog):
@@ -50,7 +50,7 @@ class VkMusic(commands.Cog):
 
         audio = await self.prepare_audio(ctx, song_name)
         queues = self.queues
-        loop = get_running_loop()
+        loop = get_event_loop()
         voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: loop.run_until_complete(voice.disconnect()) if queues.get(voice)() == 0 else 0)
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
