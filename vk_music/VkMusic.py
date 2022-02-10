@@ -31,7 +31,7 @@ class VkMusic(commands.Cog):
                 self.queues.remove(voice)
                 await voice.disconnect()
 
-            if not voice:
+            if voice and not voice.is_connected():
                 await channel.connect()
         else:
             embed = discord.Embed(title='Error', color=discord.Color.red())
