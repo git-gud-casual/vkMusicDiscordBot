@@ -24,16 +24,20 @@ class VkMusic(commands.Cog):
     async def _join(self, ctx: commands.Context):
         channel: discord.VoiceChannel = ctx.message.author.voice.channel
         voice = get(self.bot.voice_clients, guild=ctx.guild)
-        if voice and voice.is_connected():
-            self.queues.remove(voice)
-            await voice.move_to(channel)
+        if channel:
+            if voice and voice.is_connected() and voice.channel != channel.id:
+                self.queues.remove(voice)
+                await voice.move_to(channel)
+            else:
+                await channel.connect()
         else:
-            await channel.connect()
+            embed = discord.Embed(title='Error', color=discord.Color.red())
+            embed.description = 'You are not in voice channel'
+            await ctx.send(embed=embed)
 
     @commands.command(name='play')
     async def play(self, ctx: commands.Context, *, song_name):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
-
         if not voice:
             await ctx.invoke(self._join)
             voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
