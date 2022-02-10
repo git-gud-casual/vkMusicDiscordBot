@@ -55,7 +55,7 @@ class VkMusic(commands.Cog):
             audio = await self.prepare_audio(ctx, song_name)
 
             voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                       after=self.get_after_func(ctx, voice, audio.path))
+                       after=self.get_after_func(ctx, voice, song_name))
 
     def get_after_func(self, ctx, voice, audio_path):
         def after(x):
