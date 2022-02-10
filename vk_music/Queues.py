@@ -7,6 +7,7 @@ class Queues:
         self.queues = {}
         self.playing = {}
         self.sizes = {}
+        self.looped = {}
 
     def add(self, key, func):
         if self.queues.get(key):
@@ -14,6 +15,13 @@ class Queues:
         else:
             self.queues[key] = Queue()
             self.queues[key].put(func)
+            self.looped = False
+
+    def is_looped(self, key):
+        return self.looped.get(key, False)
+
+    def set_loop(self, key, val):
+        self.looped[key] = val
 
     def remove(self, key):
         if self.queues.get(key) is not None:

@@ -47,17 +47,19 @@ class VkMusic(commands.Cog):
                 audio = await self.prepare_audio(ctx, song_name, False, queue)
                 if audio:
                     self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                                                              after=self.get_after_func(voice)))
+                                                              after=self.get_after_func(voice, audio.path)))
                 return
 
             self.queues.set_playing(voice, True)
 
             audio = await self.prepare_audio(ctx, song_name)
             voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                       after=self.get_after_func(voice))
+                       after=self.get_after_func(voice, audio.path))
 
-    def get_after_func(self, voice):
-        return lambda x: self.queues.get(voice)()
+    def get_after_func(self, voice, audio_path):
+        # audio_path for loop
+        return lambda x: self.queues.get(voice)() if self.queues.is_looped(voice) else \
+            voice.play(FFmpegPCMAudio(audio_path, executable='/usr/bin/ffmpeg'))
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
         message = await ctx.send(':musical_note: Searching...')
@@ -90,7 +92,29 @@ class VkMusic(commands.Cog):
         await ctx.send(embed=embed)
         return audio
 
-    @commands.command()
+    @commands.command(name='skip')
+    async def skip(self, ctx: commands.Context):
+        voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
+        if voice and voice.is_connected() and voice.is_playing():
+            voice.pause()
+            self.queues.get(voice)()
+
+    @commands.command(name='pause')
+    async def pause(self, ctx: commands.Context):
+        voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
+        if voice and voice.is_connected() and voice.is_playing():
+            if voice.is_paused():
+                voice.resume()
+            else:
+                voice.pause()
+
+    @commands.command(name='loop')
+    async def loop(self, ctx: commands.Context):
+        voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
+        if voice and voice.is_connected():
+            self.queues.set_loop(voice, not self.queues.is_looped(voice))
+
+    @commands.command(name='stop')
     async def stop(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
         self.queues.remove(voice)
