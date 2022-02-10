@@ -16,13 +16,14 @@ class Queues:
 
     def get(self, key):
         self.set_playing(key, False)
+        self.add_size(key, -1)
         if self.queues.get(key):
             print('return')
-            return lambda: self.queues[key].get()
+            return self.queues[key].get()
         return lambda: 0
 
-    def increment_size(self, key):
-        self.sizes[key] = self.sizes.get(key, 0) + 1
+    def add_size(self, key, size=1):
+        self.sizes[key] = self.sizes.get(key, 0) + size
         return self.sizes[key]
 
     def is_playing(self, key):

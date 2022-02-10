@@ -38,7 +38,7 @@ class VkMusic(commands.Cog):
             voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
         if self.queues.is_playing(voice):
-            queue = self.queues.increment_size(voice)
+            queue = self.queues.add_size(voice)
 
             audio = await self.prepare_audio(ctx, song_name, False, queue)
             if audio:
