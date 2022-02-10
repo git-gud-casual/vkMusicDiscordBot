@@ -44,14 +44,14 @@ class VkMusic(commands.Cog):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
         if voice:
-            if voice.is_playing():
+            if self.queues.is_playing(voice):
                 self.queues.add(voice, lambda: self.bot.loop.create_task(ctx.invoke(self.play, song_name=song_name)))
                 queue = self.queues.add_size(voice)
                 embed = discord.Embed(title=f'Queue pos#{queue}', color=discord.Color.red())
                 embed.description = song_name
                 await ctx.send(embed=embed)
                 return
-
+            self.queues.set_playing(voice, True)
             audio = await self.prepare_audio(ctx, song_name)
 
             if audio:
