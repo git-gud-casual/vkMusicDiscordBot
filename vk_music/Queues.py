@@ -33,7 +33,8 @@ class Queues:
 
     def get(self, key):
         self.set_playing(key, False)
-        if self.queues.get(key):
+        if self.queues.get(key) and not self.queues[key].empty():
+            self.add_size(key, -1)
             return self.queues[key].get()
         return lambda: 0
 
