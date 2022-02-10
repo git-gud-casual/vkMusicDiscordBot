@@ -17,13 +17,13 @@ class Queues:
     def get(self, key):
         self.set_playing(key, False)
         if self.queues.get(key):
+            print('return')
             return lambda: self.queues[key].get()
         return lambda: 0
 
     def increment_size(self, key):
-        val = self.sizes.get(key, 0)
-        self.sizes[key] =  val + 1
-        return val
+        self.sizes[key] = self.sizes.get(key, 0) + 1
+        return self.sizes[key]
 
     def is_playing(self, key):
         return self.playing.get(key, False)

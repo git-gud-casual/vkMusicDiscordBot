@@ -43,7 +43,6 @@ class VkMusic(commands.Cog):
             audio = await self.prepare_audio(ctx, song_name, False, queue)
             if audio:
                 # loop = get_event_loop()
-                print('add')
                 self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: self.queues.get(voice)()))
             return
 
@@ -51,14 +50,7 @@ class VkMusic(commands.Cog):
 
         audio = await self.prepare_audio(ctx, song_name)
         queues = self.queues
-        def debug(x):
-            print('starting new')
-            try:
-                queues.get(voice)()
-            except Exception as e:
-                raise e
-            print('exception???')
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=debug)
+        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: queues.get(voice)())
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
         message = await ctx.send(':musical_note: Searching...')
