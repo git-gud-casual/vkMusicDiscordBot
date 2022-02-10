@@ -47,9 +47,9 @@ class VkMusic(commands.Cog):
         audio = await self.prepare_audio(ctx, voice, song_name)
         queues = self.queues
         def debug(x):
-            raise Exception()
+            print('starting new')
             queues.get(voice)()
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: debug)
+        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=debug)
 
     async def prepare_audio(self, ctx, voice, song_name, play_now=True):
         message = await ctx.send(':musical_note: Searching...')
