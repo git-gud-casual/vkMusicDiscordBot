@@ -1,3 +1,5 @@
+import os
+
 from vk_api import VkApi
 from json import loads
 from re import match
@@ -111,7 +113,11 @@ class VkAudio:
         url = decode(self.user_id, resp_json['payload'][1][0][0][2]).rstrip('/index.m3u8')
         print(url)
 
-        mkdir(audio.dir)
+        try:
+            mkdir(audio.dir)
+        except FileExistsError:
+            os.remove(audio.dir)
+            mkdir(audio.dir)
 
         resp = requests.get(url + '/key.pub')
         print(resp.url)
