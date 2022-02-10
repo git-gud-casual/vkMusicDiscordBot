@@ -31,17 +31,22 @@ class VkMusic(commands.Cog):
 
     @commands.command(name='play')
     async def play(self, ctx: commands.Context, *, song_name):
-
         await ctx.invoke(self._join)
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
-        if voice and voice.is_playing():
-            await ctx.send('Added in queue')
-
-            loop = get_event_loop()
-            self.queues.add(voice, lambda: loop.run_until_complete(ctx.invoke(self.play, song_name=song_name)))
+        if self.queues.is_playing(voice):
+            audio = self.prepare_audio(ctx, voice, song_name, False)
+            if audio:
+                loop = get_event_loop()
+                self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: self.queues.get(voice)()))
             return
 
+        self.queues.set_playing(voice, True)
+
+        audio = await self.prepare_audio(ctx, voice, song_name)
+        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: self.queues.get(voice)())
+
+    async def prepare_audio(self, ctx, voice, song_name, play_now=True):
         message = await ctx.send(':musical_note: Searching...')
 
         try:
@@ -62,13 +67,15 @@ class VkMusic(commands.Cog):
             embed.description = msg
             await message.delete()
             await ctx.send(embed=embed)
-            return self.queues.get(voice)()
+            return
 
-        embed = audio.get_discord_embed('Now Playing', ctx.author)
+        if play_now:
+            embed = audio.get_discord_embed('Now Playing', ctx.author)
+        else:
+            embed = audio.get_discord_embed(f'Add in Queue#{self.queues.size(voice) + 1}', ctx.author)
         await message.delete()
         await ctx.send(embed=embed)
-
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: self.queues.get(voice)())
+        return audio
 
     @commands.command()
     async def leave(self, ctx: commands.Context):
