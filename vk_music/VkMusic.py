@@ -29,7 +29,8 @@ class VkMusic(commands.Cog):
             if voice and voice.is_connected():
                 if voice.channel.id != channel.id:
                     self.queues.remove(voice)
-                    await voice.move_to(channel)
+                    await voice.disconnect()
+                    await channel.connect()
             else:
                 await channel.connect()
         else:
