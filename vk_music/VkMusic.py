@@ -35,7 +35,7 @@ class VkMusic(commands.Cog):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
         if self.queues.is_playing(voice):
-            audio = self.prepare_audio(ctx, voice, song_name, False)
+            audio = await self.prepare_audio(ctx, voice, song_name, False)
             if audio:
                 loop = get_event_loop()
                 self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: self.queues.get(voice)()))
