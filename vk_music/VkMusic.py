@@ -56,7 +56,7 @@ class VkMusic(commands.Cog):
             audio = await self.prepare_audio(ctx, song_name)
             voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=self.get_after_func(voice))
 
-    def get_after_func(self, voice, loop):
+    def get_after_func(self, voice):
         return lambda x: run(voice.disconnect()) if voice.is_connected() \
                                                                         and self.queues.get(voice)() == 0 else 0
 
