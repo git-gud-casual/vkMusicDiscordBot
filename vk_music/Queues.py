@@ -1,4 +1,5 @@
 from queue import Queue
+from asyncio import sleep
 
 
 class Queues:
@@ -15,6 +16,7 @@ class Queues:
             self.queues[key].put(func)
 
     def get(self, key):
+        sleep(3)
         self.set_playing(key, False)
         self.add_size(key, -1)
         if self.queues.get(key):
