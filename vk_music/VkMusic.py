@@ -45,20 +45,17 @@ class VkMusic(commands.Cog):
 
         if voice:
             if voice.is_playing():
+                self.queues.add(voice, lambda: self.bot.loop.create_task(ctx.invoke(self.play, song_name=song_name)))
                 queue = self.queues.add_size(voice)
-                audio = await self.prepare_audio(ctx, song_name, False, queue)
-                if audio:
-                    self.queues.add(voice, lambda: self.bot.loop.create_task(ctx.invoke(self.play, song_name=audio.path)))
+                embed = discord.Embed(title=f'Queue pos#{queue}', color=discord.Color.red())
+                embed.description = song_name
+                await ctx.send(embed=embed)
                 return
 
-            if not exists(song_name):
-                audio = await self.prepare_audio(ctx, song_name)
-                path = audio.path
-            else:
-                path = song_name
+            audio = await self.prepare_audio(ctx, song_name)
 
-            voice.play(FFmpegPCMAudio(path, executable='/usr/bin/ffmpeg'),
-                       after=self.get_after_func(ctx, voice, path))
+            voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
+                       after=self.get_after_func(ctx, voice, audio.path))
 
     def get_after_func(self, ctx, voice, audio_path):
         def after(x):
@@ -70,7 +67,7 @@ class VkMusic(commands.Cog):
 
         return after
 
-    async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
+    async def prepare_audio(self, ctx, song_name):
         message = await ctx.send(':musical_note: Searching...')
 
         try:
@@ -93,10 +90,7 @@ class VkMusic(commands.Cog):
             await ctx.send(embed=embed)
             return
 
-        if play_now:
-            embed = audio.get_discord_embed('Now Playing', ctx.author)
-        else:
-            embed = audio.get_discord_embed(f'Add in Queue#{queue_num}', ctx.author)
+        embed = audio.get_discord_embed('Now Playing', ctx.author)
         await message.delete()
         await ctx.send(embed=embed)
         return audio
