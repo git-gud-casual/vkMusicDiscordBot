@@ -45,9 +45,10 @@ class VkMusic(commands.Cog):
         self.queues.set_playing(voice, True)
 
         audio = await self.prepare_audio(ctx, voice, song_name)
+        queues = self.queues
         def debug(x):
             print('start new')
-            self.queues.get(voice)()
+            queues.get(voice)()
         voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: debug)
 
     async def prepare_audio(self, ctx, voice, song_name, play_now=True):
