@@ -58,7 +58,7 @@ class VkMusic(commands.Cog):
 
     def get_after_func(self, voice, audio_path):
         # audio_path for loop
-        return lambda x: self.queues.get(voice)() if self.queues.is_looped(voice) else \
+        return lambda x: self.queues.get(voice)() if not self.queues.is_looped(voice) else \
             voice.play(FFmpegPCMAudio(audio_path, executable='/usr/bin/ffmpeg'))
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
@@ -98,21 +98,35 @@ class VkMusic(commands.Cog):
         if voice and voice.is_connected() and voice.is_playing():
             voice.pause()
             self.queues.get(voice)()
+            embed = discord.Embed(title='Skiped', color=discord.Color.red())
+            await ctx.send(embed=embed)
 
     @commands.command(name='pause')
     async def pause(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
             if voice.is_paused():
+                title = 'Resume'
                 voice.resume()
             else:
+                title = 'Paused'
                 voice.pause()
+            embed = discord.Embed(title=title, color=discord.Color.red())
+            await ctx.send(embed=embed)
 
     @commands.command(name='loop')
     async def loop(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
-            self.queues.set_loop(voice, not self.queues.is_looped(voice))
+            val = not self.queues.is_looped(voice)
+            self.queues.set_loop(voice, val)
+
+            if val:
+                title = 'Looped'
+            else:
+                title = 'Loop off'
+            embed = discord.Embed(title=title, color=discord.Color.red())
+            await ctx.send(embed=embed)
 
     @commands.command(name='stop')
     async def stop(self, ctx: commands.Context):
