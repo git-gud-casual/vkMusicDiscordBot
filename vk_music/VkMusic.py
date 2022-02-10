@@ -58,12 +58,7 @@ class VkMusic(commands.Cog):
                        after=self.get_after_func(voice))
 
     def get_after_func(self, voice):
-        def after(x):
-            if voice.is_connected() and self.queues.get(voice)() == 0:
-                loop = new_event_loop()
-                set_event_loop(loop)
-                loop.run_until_complete(voice.disconnect())
-        return after
+        return lambda x: self.queues.get(voice)()
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
         message = await ctx.send(':musical_note: Searching...')
