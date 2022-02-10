@@ -94,17 +94,13 @@ class VkAudio:
         except TypeError:
             raise AudioNotFoundException()
 
-        print(song_data)
-
         audio = Audio(song_data)
-        print(audio)
         return audio
 
     def download_song_by_name(self, song_name):
         audio = self.get_song_id_by_name(song_name)
 
         if exists(audio.path):
-            print(f'{audio.path} exists')
             return audio
 
         data = {"al": 1, "ids": audio.hash}
@@ -113,7 +109,6 @@ class VkAudio:
 
         resp_json = loads(resp.text.strip('<!--'))
         url = decode(self.user_id, resp_json['payload'][1][0][0][2]).rstrip('/index.m3u8')
-        print(url)
 
         mkdir(audio.dir)
 
@@ -140,7 +135,6 @@ class VkAudio:
             f.write('\n'.join(m3u8))
 
         subprocess.call(f'/usr/bin/ffmpeg -y -allowed_extensions ALL -i {audio.dir}/index.m3u8 -c copy {audio.path}', shell=True)
-        print(f'Song saved in {audio.path}')
 
         return audio
 
