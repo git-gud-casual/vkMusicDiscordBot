@@ -22,9 +22,9 @@ class VkMusic(commands.Cog):
 
     @commands.command(name='join')
     async def _join(self, ctx: commands.Context):
-        channel: discord.VoiceChannel = ctx.message.author.voice.channel
-        voice = get(self.bot.voice_clients, guild=ctx.guild)
-        if channel:
+        if ctx.message.author.voice:
+            channel: discord.VoiceChannel = ctx.message.author.voice.channel
+            voice = get(self.bot.voice_clients, guild=ctx.guild)
             if voice and voice.is_connected() and voice.channel != channel.id:
                 self.queues.remove(voice)
                 await voice.move_to(channel)
@@ -54,7 +54,8 @@ class VkMusic(commands.Cog):
         self.queues.set_playing(voice, True)
 
         audio = await self.prepare_audio(ctx, song_name)
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=self.get_after_func(voice))
+        loop = get_event_loop()
+        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=self.get_after_func(voice, loop))
 
     def get_after_func(self, voice, loop):
         return lambda x: loop.run_until_complete(voice.disconnect()) if self.queues.get(voice)() == 0 else 0
