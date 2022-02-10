@@ -109,6 +109,7 @@ class VkMusic(commands.Cog):
             self.queues.set_loop(voice, False)
             embed = discord.Embed(title='Skipped', color=discord.Color.red())
             await ctx.send(embed=embed)
+            self.queues.add_size(voice, -1)
             self.queues.get(voice)()
 
     @commands.command(name='pause')
