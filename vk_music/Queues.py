@@ -20,11 +20,10 @@ class Queues:
             return lambda: self.queues[key].get()
         return lambda: 0
 
-    def get_size(self, key):
-        return self.sizes[key]
-
     def increment_size(self, key):
-        self.sizes[key] = self.sizes.get(key, 0) + 1
+        val = self.sizes.get(key, 0)
+        self.sizes[key] =  val + 1
+        return val
 
     def is_playing(self, key):
         return self.playing.get(key, False)

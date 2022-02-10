@@ -32,15 +32,15 @@ class VkMusic(commands.Cog):
     @commands.command(name='play')
     async def play(self, ctx: commands.Context, *, song_name):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
+
         if not voice:
             await ctx.invoke(self._join)
             voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
-        voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
 
         if self.queues.is_playing(voice):
-            self.queues.increment_size(voice)
+            queue = self.queues.increment_size(voice)
 
-            audio = await self.prepare_audio(ctx, voice, song_name, False)
+            audio = await self.prepare_audio(ctx, song_name, False, queue)
             if audio:
                 # loop = get_event_loop()
                 print('add')
@@ -49,14 +49,18 @@ class VkMusic(commands.Cog):
 
         self.queues.set_playing(voice, True)
 
-        audio = await self.prepare_audio(ctx, voice, song_name)
+        audio = await self.prepare_audio(ctx, song_name)
         queues = self.queues
         def debug(x):
             print('starting new')
-            queues.get(voice)()
+            try:
+                queues.get(voice)()
+            except Exception as e:
+                raise e
+            print('exception???')
         voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=debug)
 
-    async def prepare_audio(self, ctx, voice, song_name, play_now=True):
+    async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
         message = await ctx.send(':musical_note: Searching...')
 
         try:
@@ -82,13 +86,13 @@ class VkMusic(commands.Cog):
         if play_now:
             embed = audio.get_discord_embed('Now Playing', ctx.author)
         else:
-            embed = audio.get_discord_embed(f'Add in Queue#{self.queues.get_size(voice) + 1}', ctx.author)
+            embed = audio.get_discord_embed(f'Add in Queue#{queue_num}', ctx.author)
         await message.delete()
         await ctx.send(embed=embed)
         return audio
 
     @commands.command()
-    async def leave(self, ctx: commands.Context):
+    async def stop(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
             await voice.disconnect()
