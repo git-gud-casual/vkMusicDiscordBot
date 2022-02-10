@@ -103,6 +103,7 @@ class VkMusic(commands.Cog):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected() and voice.is_playing():
             voice.pause()
+            self.queues.set_loop(voice, False)
             self.queues.get(voice)()
             embed = discord.Embed(title='Skiped', color=discord.Color.red())
             await ctx.send(embed=embed)
