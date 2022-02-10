@@ -27,7 +27,7 @@ class VkMusic(commands.Cog):
             voice = get(self.bot.voice_clients, guild=ctx.guild)
             if voice and voice.is_connected() and voice.channel != channel.id:
                 voice.stop()
-            await channel.connect()
+                await channel.connect()
         else:
             embed = discord.Embed(title='Error', color=discord.Color.red())
             embed.description = 'You are not in voice channel'
@@ -54,7 +54,8 @@ class VkMusic(commands.Cog):
             voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=self.get_after_func(voice, loop))
 
     def get_after_func(self, voice, loop):
-        return lambda x: loop.run_until_complete(voice.disconnect()) if self.queues.get(voice)() == 0 else 0
+        return lambda x: loop.run_until_complete(voice.disconnect()) if voice.is_connected() \
+                                                                        and self.queues.get(voice)() == 0 else 0
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
         message = await ctx.send(':musical_note: Searching...')
