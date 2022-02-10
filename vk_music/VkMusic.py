@@ -66,7 +66,7 @@ class VkMusic(commands.Cog):
                 if self.queues.get(voice)() != 0:
                     self.queues.add_size(voice, -1)
             else:
-                self.bot.loop.create_task(ctx.invoke(self.play, song_name=audio_path)
+                self.bot.loop.create_task(ctx.invoke(self.play, song_name=audio_path))
 
         return after
 
