@@ -28,7 +28,6 @@ class Queues:
             del self.sizes[key]
 
     def get(self, key):
-        self.add_size(key, -1)
         if self.queues.get(key):
             return self.queues[key].get()
         return lambda: 0

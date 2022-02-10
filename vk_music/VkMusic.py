@@ -61,9 +61,14 @@ class VkMusic(commands.Cog):
                        after=self.get_after_func(ctx, voice, path))
 
     def get_after_func(self, ctx, voice, audio_path):
-        # audio_path for loop
-        return lambda x: self.queues.get(voice)() if not self.queues.is_looped(voice) else \
-            self.bot.loop.create_task(ctx.invoke(self.play, song_name=audio_path))
+        def after(x):
+            if not self.queues.is_looped(voice):
+                if self.queues.get(voice)() != 0:
+                    self.queues.add_size(voice, -1)
+            else:
+                self.bot.loop.create_task(ctx.invoke(self.play, song_name=audio_path)
+
+        return after
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
         message = await ctx.send(':musical_note: Searching...')
