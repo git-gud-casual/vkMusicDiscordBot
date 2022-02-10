@@ -27,8 +27,9 @@ class VkMusic(commands.Cog):
             voice = get(self.bot.voice_clients, guild=ctx.guild)
 
             if voice and voice.is_connected():
-                print(voice.channel.id, channel.id)
-                await voice.move_to(channel)
+                if voice.channel.id != channel.id:
+                    self.queues.remove(voice)
+                    await voice.move_to(channel)
             else:
                 await channel.connect()
         else:
