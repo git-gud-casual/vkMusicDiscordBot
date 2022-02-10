@@ -7,7 +7,6 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
-from asyncio import new_event_loop, set_event_loop
 
 
 class VkMusic(commands.Cog):
