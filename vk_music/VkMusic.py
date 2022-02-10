@@ -102,7 +102,7 @@ class VkMusic(commands.Cog):
     @commands.command(name='pause')
     async def pause(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
-        if voice and voice.is_connected() and voice.is_playing():
+        if voice and voice.is_connected():
             if voice.is_paused():
                 voice.resume()
             else:
