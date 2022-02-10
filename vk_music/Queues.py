@@ -1,5 +1,4 @@
 from queue import Queue
-from time import sleep
 
 
 class Queues:
@@ -15,8 +14,17 @@ class Queues:
             self.queues[key] = Queue()
             self.queues[key].put(func)
 
+    def remove(self, key):
+        if self.queues.get(key) is not None:
+            del self.queues[key]
+
+        if self.playing.get(key) is not None:
+            del self.playing[key]
+
+        if self.sizes.get(key) is not None:
+            del self.sizes[key]
+
     def get(self, key):
-        sleep(3)
         self.add_size(key, -1)
         if self.queues.get(key):
             return self.queues[key].get()

@@ -7,7 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
-from asyncio import get_event_loop
+from asyncio import get_running_loop
 
 
 class VkMusic(commands.Cog):
@@ -25,6 +25,7 @@ class VkMusic(commands.Cog):
         channel: discord.VoiceChannel = ctx.message.author.voice.channel
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
+            self.queues.remove(voice)
             await voice.move_to(channel)
         else:
             await channel.connect()
@@ -42,7 +43,6 @@ class VkMusic(commands.Cog):
 
             audio = await self.prepare_audio(ctx, song_name, False, queue)
             if audio:
-                # loop = get_event_loop()
                 self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: self.queues.get(voice)()))
             return
 
@@ -50,7 +50,8 @@ class VkMusic(commands.Cog):
 
         audio = await self.prepare_audio(ctx, song_name)
         queues = self.queues
-        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: queues.get(voice)())
+        loop = get_running_loop()
+        voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=lambda x: loop.run_until_complete(voice.disconnect()) if queues.get(voice)() == 0 else 0)
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
         message = await ctx.send(':musical_note: Searching...')
@@ -86,6 +87,6 @@ class VkMusic(commands.Cog):
     @commands.command()
     async def stop(self, ctx: commands.Context):
         voice: discord.VoiceClient = get(self.bot.voice_clients, guild=ctx.guild)
+        self.queues.remove(voice)
         if voice and voice.is_connected():
             await voice.disconnect()
-
