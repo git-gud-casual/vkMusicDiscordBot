@@ -116,7 +116,7 @@ class VkAudio:
         try:
             mkdir(audio.dir)
         except FileExistsError:
-            os.remove(audio.dir)
+            rmdir(audio.dir)
             mkdir(audio.dir)
 
         resp = requests.get(url + '/key.pub')
