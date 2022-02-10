@@ -42,8 +42,9 @@ class VkMusic(commands.Cog):
             queue = self.queues.add_size(voice)
             audio = await self.prepare_audio(ctx, song_name, False, queue)
             if audio:
+                loop = get_event_loop()
                 self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                                                          after=self.get_after_func(voice)))
+                                                          after=self.get_after_func(voice, loop)))
             return
 
         self.queues.set_playing(voice, True)
@@ -51,8 +52,7 @@ class VkMusic(commands.Cog):
         audio = await self.prepare_audio(ctx, song_name)
         voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'), after=self.get_after_func(voice))
 
-    def get_after_func(self, voice):
-        loop = get_event_loop()
+    def get_after_func(self, voice, loop):
         return lambda x: loop.run_until_complete(voice.disconnect()) if self.queues.get(voice)() == 0 else 0
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
