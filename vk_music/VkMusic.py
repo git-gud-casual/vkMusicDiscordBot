@@ -7,7 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
-from asyncio import new_event_loop
+from asyncio import get_event_loop
 
 
 class VkMusic(commands.Cog):
@@ -48,18 +48,20 @@ class VkMusic(commands.Cog):
                 audio = await self.prepare_audio(ctx, song_name, False, queue)
                 if audio:
                     self.queues.add(voice, lambda: voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                                                              after=self.get_after_func(voice, new_event_loop())))
+                                                              after=self.get_after_func(voice)))
                 return
 
             self.queues.set_playing(voice, True)
 
             audio = await self.prepare_audio(ctx, song_name)
             voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                       after=self.get_after_func(voice, new_event_loop()))
+                       after=self.get_after_func(voice))
 
-    def get_after_func(self, voice, loop):
-        return lambda x: loop.run_until_complete(voice.disconnect()) if voice.is_connected() \
-                                                                        and self.queues.get(voice)() == 0 else 0
+    def get_after_func(self, voice):
+        def after(x):
+            if voice.is_connected() and self.queues.get(voice)() == 0:
+                get_event_loop().run_until_complete(voice.disconnect())
+        return after
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
         message = await ctx.send(':musical_note: Searching...')
