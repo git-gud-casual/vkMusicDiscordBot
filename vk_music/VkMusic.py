@@ -102,9 +102,9 @@ class VkMusic(commands.Cog):
         if voice and voice.is_connected() and voice.is_playing():
             voice.pause()
             self.queues.set_loop(voice, False)
-            self.queues.get(voice)()
-            embed = discord.Embed(title='Skiped', color=discord.Color.red())
+            embed = discord.Embed(title='Skipped', color=discord.Color.red())
             await ctx.send(embed=embed)
+            self.queues.get(voice)()
 
     @commands.command(name='pause')
     async def pause(self, ctx: commands.Context):
