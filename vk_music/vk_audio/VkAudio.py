@@ -114,6 +114,7 @@ class VkAudio:
         mkdir(audio.dir)
 
         resp = requests.get(url + '/key.pub')
+        print(resp.url)
         assert resp.status_code == 200
         with open(f'{audio.dir}/key.pub', 'w') as f:
             f.write(resp.text)
