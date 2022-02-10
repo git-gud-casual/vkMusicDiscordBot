@@ -98,7 +98,7 @@ class VkAudio:
         audio = Audio(song_data)
         return audio
 
-    def download_song_by_name(self, song_name):
+    def download_song_by_name(self, song_name) -> Audio:
         audio = self.get_song_id_by_name(song_name)
 
         if exists(audio.path):
@@ -121,7 +121,6 @@ class VkAudio:
         resp = requests.get(url + '/index.m3u8')
         assert resp.status_code == 200
         m3u8 = resp.text.split('\n')
-        print(m3u8)
 
         for index, string in enumerate(m3u8):
             if string.startswith('seg'):

@@ -54,8 +54,9 @@ class VkMusic(commands.Cog):
 
             audio = await self.prepare_audio(ctx, song_name)
 
-            voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
-                       after=self.get_after_func(ctx, voice, song_name))
+            if audio:
+                voice.play(FFmpegPCMAudio(audio.path, executable='/usr/bin/ffmpeg'),
+                           after=self.get_after_func(ctx, voice, song_name))
 
     def get_after_func(self, ctx, voice, audio_path):
         def after(x):
@@ -83,12 +84,12 @@ class VkMusic(commands.Cog):
                 msg = 'Audio not available'
             else:
                 msg = 'Unknown error'
-                print(e.__traceback__)
+                print(e)
 
             embed.description = msg
             await message.delete()
             await ctx.send(embed=embed)
-            return
+            return None
 
         embed = audio.get_discord_embed('Now Playing', ctx.author)
         await message.delete()
