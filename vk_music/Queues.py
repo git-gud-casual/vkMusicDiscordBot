@@ -32,9 +32,9 @@ class Queues:
             del self.sizes[key]
 
     def get(self, key):
+        self.set_playing(key, False)
         if self.queues.get(key):
             return self.queues[key].get()
-        self.set_playing(key, False)
         return lambda: 0
 
     def set_playing(self, key, val):
