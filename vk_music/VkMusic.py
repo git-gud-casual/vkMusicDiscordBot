@@ -7,7 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
-from os.path import exists
+import traceback
 
 
 class VkMusic(commands.Cog):
@@ -84,7 +84,7 @@ class VkMusic(commands.Cog):
                 msg = 'Audio not available'
             else:
                 msg = 'Unknown error'
-                print(e)
+                traceback.print_exc()
 
             embed.description = msg
             await message.delete()
