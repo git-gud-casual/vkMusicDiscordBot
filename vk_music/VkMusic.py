@@ -7,7 +7,7 @@ from vk_music.vk_audio.VkAudio import VkAudio
 from vk_api import VkApi
 import config
 from vk_music.Queues import Queues
-from asyncio import get_event_loop
+from asyncio import new_event_loop, set_event_loop
 
 
 class VkMusic(commands.Cog):
@@ -60,7 +60,9 @@ class VkMusic(commands.Cog):
     def get_after_func(self, voice):
         def after(x):
             if voice.is_connected() and self.queues.get(voice)() == 0:
-                get_event_loop().run_until_complete(voice.disconnect())
+                loop = new_event_loop()
+                set_event_loop(loop)
+                loop.run_until_complete(voice.disconnect())
         return after
 
     async def prepare_audio(self, ctx, song_name, play_now=True, queue_num=None):
